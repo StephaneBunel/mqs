@@ -19,16 +19,28 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func main() {
-	var dsn string
+const (
+	DSN_DEFAULT = "root:@/mysql"
+	DSN_ENVVAR  = "MQS_DSN"
+)
 
-	flag.StringVar(&dsn, "dsn", "root:@/mysql", "DSN to connect with MySQL")
+func main() {
+	var dsn, dsn_cli string
+	var dsn_envvar string = os.Getenv(DSN_ENVVAR)
+
+	flag.StringVar(&dsn_cli, "dsn", DSN_DEFAULT, "DSN to connect with MySQL")
 	flag.Parse()
+
+	dsn = dsn_cli
+	if dsn_envvar != "" && dsn_cli == DSN_DEFAULT {
+		dsn = dsn_envvar
+	}
 
 	// Create database handler and watcher
 	dbh := NewMySQLHandler(dsn)
