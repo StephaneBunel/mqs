@@ -1,27 +1,28 @@
 # mqs - MariaDB/MySQL Query Sniper
 
-mqs is a tool for MariaDB/MySQL that monitor and eventually kill a SQL query that run for too long.
+`mqs` is a tool for MariaDB and MySQL databases. Its mission is to kill queries that run for too long.
 
 ## mqs is flexible
 
-With mqs the timeout is local to the query, not global to the server.
+`mqs` isn't a fool sniper killing blindly. He acts according to your contacts.
+Because you are the best person to know if the request you wrote must be killed after a while, 
+you set yourself the timeout for it.
 
-  * The developer decides itself if a query needs to be killed or not (avoid to kill INSERT nor UPDATE).
-  * The timeout is programmable directly given inside the SQL statement.
+  * As a query writer, you decide yourself if a query needs to be killed (avoid to kill INSERT nor UPDATE statements).
+  * As a query writer, you decide yourself of the timeout in seconds.
 
 ## How does it works
 
-`mqs` connects to the database with a specified uset. The user MUST have the PROCESS and SUPER database privileges.
-Once connected to the database `mqs` monitors every running queries looking for SQL statement that starts with a C-style comment containing tags.
+Once `msq` is connected to the database it monitors every running queries looking for SQL statement that starts with a C-style comment. When found it acts according to given instructions.
+
 Let see an example:
 
 ```
 /* -mqs-timeout=5 */ SELECT bigdata FROM bigtable;
 ```
-
 Do not add spaces around '='.
 
-## Available tags
+## Available instructions
 
   * -mqs-timeout=[integer]
 
@@ -39,8 +40,9 @@ or
 ```
 bin/mqs -dsn="root:@/mysql"
 ```
-
 This last form has precedence over the first.
+
+Note that the database user MUST have PROCESS and SUPER privileges.
 
 ## Test in mysql console
 
@@ -63,12 +65,13 @@ Without `mqs` this query sleep 60 seconds before returns. With `mqs` running, it
 |         1 |
 +-----------+
 
-real	0m6.867s
-user	0m0.004s
-sys	0m0.000s
+real    0m6.867s
+user    0m0.004s
+sys     0m0.000s
 ```
 
 ## How to build mqs
 
 `mqs` is written in [go](https://golang.org/)(lang) and build with [gb](http://getgb.io/).
 To compile and install `mqs` just type `gb build` in the project root. The executable will be in the `bin` directory (`bin/mqs`)
+
